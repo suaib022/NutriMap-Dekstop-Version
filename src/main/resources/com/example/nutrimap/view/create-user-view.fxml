@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.nutrimap.controller.CreateUserController"
+      spacing="15" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" prefWidth="400">
+    <Label text="Create New User" styleClass="header-label"/>
+    <VBox spacing="5">
+        <Label text="Full Name"/>
+        <TextField fx:id="nameField" promptText="Enter full name"/>
+    </VBox>
+    <VBox spacing="5">
+        <Label text="Email Address"/>
+        <TextField fx:id="emailField" promptText="Enter email address"/>
+    </VBox>
+    <VBox spacing="5">
+        <Label text="Password"/>
+        <PasswordField fx:id="passwordField" promptText="Enter password"/>
+    </VBox>
+    <VBox spacing="5">
+        <Label text="Role"/>
+        <ComboBox fx:id="roleCombo" maxWidth="Infinity"/>
+    </VBox>
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button text="Cancel" onAction="#handleCancel" styleClass="secondary-button"/>
+        <Button text="Create User" onAction="#handleCreate" styleClass="action-button"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.nutrimap.controller.DashboardController"
+            stylesheets="@app.css"
+            prefWidth="1000" prefHeight="700">
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250">
+            <Label text="NutriMap" style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold; -fx-padding: 0 0 20 0;"/>
+            <Button text="Home" onAction="#showHome" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="Profile" onAction="#showProfile" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="Users" onAction="#showUsers" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="Branches" onAction="#showBranches" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <VBox VBox.vgrow="ALWAYS"/> 
+            <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10 0 20 0;">
+                <Circle fx:id="avatarCircle" radius="20" fill="gray"/>
+                <VBox>
+                    <Label fx:id="userNameLabel" text="User Name" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label fx:id="userRoleLabel" text="Role" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+            <Button text="Logout" onAction="#handleLogout" styleClass="sidebar-button, logout-button" maxWidth="Infinity"/>
+        </VBox>
+    </left>
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+        </StackPane>
+    </center>
+</BorderPane>

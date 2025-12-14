@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.nutrimap.controller.BranchesController"
+      spacing="20" style="-fx-padding: 30;">
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Branches" styleClass="header-label"/>
+        <VBox HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search branches..." prefWidth="250"/>
+    </HBox>
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <ComboBox fx:id="divisionFilter" promptText="All Divisions" prefWidth="150"/>
+        <ComboBox fx:id="districtFilter" promptText="All Districts" prefWidth="150"/>
+        <ComboBox fx:id="upazilaFilter" promptText="All Upazilas" prefWidth="150"/>
+        <Button text="Reset Filters" onAction="#handleResetFilters" styleClass="action-button" style="-fx-background-color: #95a5a6;"/>
+    </HBox>
+    <TableView fx:id="branchesTable" prefHeight="600">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" minWidth="50" prefWidth="50"/>
+            <TableColumn fx:id="colName" text="Name" minWidth="150" prefWidth="150"/>
+            <TableColumn fx:id="colDivision" text="Division" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colDistrict" text="District" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colUpazilla" text="Upazilla" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colArea" text="Area (Unions)" minWidth="300" prefWidth="300"/>
+            <TableColumn fx:id="colUrl" text="URL" minWidth="180" prefWidth="180"/>
+        </columns>
+    </TableView>
+    <Pagination fx:id="pagination" pageCount="10" />
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="resultsLabel" text="Showing 0 results" style="-fx-text-fill: #95a5a6;"/>
+    </HBox>
+</VBox>

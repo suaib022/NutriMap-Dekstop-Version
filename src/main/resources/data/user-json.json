@@ -1,0 +1,22 @@
+[
+  { "id": 1, "name": "Admin User", "email": "admin1@example.com", "password": "123", "role": "ADMIN" },
+  { "id": 2, "name": "Rafiq Hasan", "email": "rafiq.hasan@example.com", "password": "pass@2025", "role": "USER", "imagePath": "" },
+  { "id": 3, "name": "Ayesha Rahman", "email": "ayesha.rahman@example.com", "password": "ayesha123", "role": "USER", "imagePath": "" },
+  { "id": 4, "name": "Sakib Hossain", "email": "sakib.hossain@example.com", "password": "sakib@bd", "role": "USER", "imagePath": "" },
+  { "id": 5, "name": "Nusrat Jahan", "email": "nusrat.jahan@example.com", "password": "nusrat456", "role": "USER", "imagePath": "" },
+  { "id": 6, "name": "Imran Ahmed", "email": "imran.ahmed@example.com", "password": "imran789", "role": "USER", "imagePath": "" },
+  { "id": 7, "name": "Sharmin Akter", "email": "sharmin.akter@example.com", "password": "sharmin@1", "role": "USER", "imagePath": "" },
+  { "id": 8, "name": "Mehedi Hasan", "email": "mehedi.hasan@example.com", "password": "mehedi2025", "role": "USER", "imagePath": "" },
+  { "id": 9, "name": "Farzana Islam", "email": "farzana.islam@example.com", "password": "farzana321", "role": "USER", "imagePath": "" },
+  { "id": 10, "name": "Mahmudul Hasan", "email": "mahmudul.hasan@example.com", "password": "mahmudul@bd", "role": "USER", "imagePath": "" },
+  { "id": 11, "name": "Tanjila Sultana", "email": "tanjila.sultana@example.com", "password": "tanjila999", "role": "USER", "imagePath": "" },
+  { "id": 12, "name": "Anik Chowdhury", "email": "anik.chowdhury@example.com", "password": "anik@2024", "role": "USER", "imagePath": "" },
+  { "id": 13, "name": "Sadia Karim", "email": "sadia.karim@example.com", "password": "sadia000", "role": "USER", "imagePath": "" },
+  { "id": 14, "name": "Rubel Mia", "email": "rubel.mia@example.com", "password": "rubel1234", "role": "USER", "imagePath": "" },
+  { "id": 15, "name": "Rashedul Islam", "email": "rashedul.islam@example.com", "password": "rashedul@1", "role": "USER", "imagePath": "" },
+  { "id": 16, "name": "Jannatul Ferdous", "email": "jannatul.ferdous@example.com", "password": "jannat2025", "role": "USER", "imagePath": "" },
+  { "id": 17, "name": "Fahim Khan", "email": "fahim.khan@example.com", "password": "fahim@bd", "role": "USER", "imagePath": "" },
+  { "id": 18, "name": "Mizanur Rahman", "email": "mizanur.rahman@example.com", "password": "mizanur777", "role": "USER", "imagePath": "" },
+  { "id": 19, "name": "Sumi Akter", "email": "sumi.akter@example.com", "password": "sumi4567", "role": "USER", "imagePath": "" },
+  { "id": 20, "name": "System Admin BD", "email": "sysadmin.bd@example.com", "password": "admin@bd2025", "role": "ADMIN" }
+]
