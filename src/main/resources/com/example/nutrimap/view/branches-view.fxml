@@ -15,7 +15,6 @@
         <Label text="Branches" styleClass="header-label"/>
         <VBox HBox.hgrow="ALWAYS"/>
         <TextField fx:id="searchField" promptText="Search branches..." prefWidth="250"/>
-        <Button text="+ Add Branch" onAction="#handleCreateBranch" styleClass="action-button"/>
     </HBox>
     <HBox spacing="15" alignment="CENTER_LEFT">
         <ComboBox fx:id="divisionFilter" promptText="All Divisions" prefWidth="150"/>
@@ -32,7 +31,6 @@
             <TableColumn fx:id="colUpazilla" text="Upazilla" minWidth="100" prefWidth="100"/>
             <TableColumn fx:id="colArea" text="Area (Unions)" minWidth="200" prefWidth="200"/>
             <TableColumn fx:id="colUrl" text="URL" minWidth="150" prefWidth="150"/>
-            <TableColumn fx:id="colActions" text="Actions" minWidth="120" prefWidth="120"/>
         </columns>
     </TableView>
     <Pagination fx:id="pagination" pageCount="10" />

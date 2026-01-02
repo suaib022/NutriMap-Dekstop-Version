@@ -4,6 +4,7 @@ module com.example.nutrimap {
     requires javafx.graphics;
     requires com.google.gson;
     requires java.sql;
+    requires java.net.http;
     opens com.example.nutrimap to javafx.fxml;
     exports com.example.nutrimap;
     exports com.example.nutrimap.controller;
@@ -11,4 +12,6 @@ module com.example.nutrimap {
     exports com.example.nutrimap.model;
     opens com.example.nutrimap.model to com.google.gson;
     exports com.example.nutrimap.dao;
+    exports com.example.nutrimap.service;
+    opens com.example.nutrimap.service to com.google.gson;
 }

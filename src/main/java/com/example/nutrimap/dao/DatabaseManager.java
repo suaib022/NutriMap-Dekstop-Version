@@ -6,6 +6,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Database manager for SQLite.
+ * Only manages users, children, and visits tables.
+ * Location data (divisions, districts, upazilas, unions, branches) is fetched from GitHub.
+ */
 public class DatabaseManager {
     private static final String DB_NAME = "nutrimap.db";
     private static final String DB_PATH;
@@ -41,67 +46,7 @@ public class DatabaseManager {
 
     private void createTables() throws SQLException {
         try (Statement stmt = connection.createStatement()) {
-            stmt.execute(
-                "CREATE TABLE IF NOT EXISTS divisions (" +
-                "    id TEXT PRIMARY KEY," +
-                "    name TEXT NOT NULL," +
-                "    bn_name TEXT," +
-                "    url TEXT" +
-                ")"
-            );
-
-            stmt.execute(
-                "CREATE TABLE IF NOT EXISTS districts (" +
-                "    id TEXT PRIMARY KEY," +
-                "    division_id TEXT," +
-                "    name TEXT NOT NULL," +
-                "    bn_name TEXT," +
-                "    lat TEXT," +
-                "    lon TEXT," +
-                "    url TEXT," +
-                "    FOREIGN KEY (division_id) REFERENCES divisions(id)" +
-                ")"
-            );
-
-            stmt.execute(
-                "CREATE TABLE IF NOT EXISTS upazilas (" +
-                "    id TEXT PRIMARY KEY," +
-                "    district_id TEXT," +
-                "    name TEXT NOT NULL," +
-                "    bn_name TEXT," +
-                "    url TEXT," +
-                "    FOREIGN KEY (district_id) REFERENCES districts(id)" +
-                ")"
-            );
-
-            stmt.execute(
-                "CREATE TABLE IF NOT EXISTS unions (" +
-                "    id TEXT PRIMARY KEY," +
-                "    upazila_id TEXT," +
-                "    name TEXT NOT NULL," +
-                "    bn_name TEXT," +
-                "    url TEXT," +
-                "    FOREIGN KEY (upazila_id) REFERENCES upazilas(id)" +
-                ")"
-            );
-
-            stmt.execute(
-                "CREATE TABLE IF NOT EXISTS branches (" +
-                "    id TEXT PRIMARY KEY," +
-                "    name TEXT NOT NULL," +
-                "    bn_name TEXT," +
-                "    area TEXT," +
-                "    bn_area TEXT," +
-                "    upazilla TEXT," +
-                "    bn_upazilla TEXT," +
-                "    district TEXT," +
-                "    bn_district TEXT," +
-                "    division TEXT," +
-                "    bn_division TEXT," +
-                "    url TEXT" +
-                ")"
-            );
-
+            // Users table
             stmt.execute(
                 "CREATE TABLE IF NOT EXISTS users (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -113,6 +58,7 @@ public class DatabaseManager {
                 ")"
             );
 
+            // Children table
             stmt.execute(
                 "CREATE TABLE IF NOT EXISTS children (" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -128,11 +74,11 @@ public class DatabaseManager {
                 "    branch_name TEXT," +
                 "    last_visit TEXT," +
                 "    gender TEXT," +
-                "    date_of_birth TEXT," +
-                "    FOREIGN KEY (branch_id) REFERENCES branches(id)" +
+                "    date_of_birth TEXT" +
                 ")"
             );
 
+            // Visits table
             stmt.execute(
                 "CREATE TABLE IF NOT EXISTS visits (" +
                 "    visit_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -151,11 +97,7 @@ public class DatabaseManager {
                 ")"
             );
 
-            stmt.execute("CREATE INDEX IF NOT EXISTS idx_districts_division ON districts(division_id)");
-            stmt.execute("CREATE INDEX IF NOT EXISTS idx_upazilas_district ON upazilas(district_id)");
-            stmt.execute("CREATE INDEX IF NOT EXISTS idx_unions_upazila ON unions(upazila_id)");
-            stmt.execute("CREATE INDEX IF NOT EXISTS idx_branches_division ON branches(division)");
-            stmt.execute("CREATE INDEX IF NOT EXISTS idx_branches_district ON branches(district)");
+            // Indexes
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_children_branch ON children(branch_id)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_visits_child ON visits(child_id)");

@@ -1,37 +1,22 @@
 package com.example.nutrimap.dao;
 
 import com.example.nutrimap.model.DivisionModel;
+import com.example.nutrimap.service.GitHubJsonDataService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DivisionDAO {
-    private final DatabaseManager dbManager;
+    private final GitHubJsonDataService dataService;
 
     public DivisionDAO() {
-        this.dbManager = DatabaseManager.getInstance();
+        this.dataService = GitHubJsonDataService.getInstance();
     }
 
     public List<DivisionModel> getAll() {
-        List<DivisionModel> divisions = new ArrayList<>();
-        String sql = "SELECT * FROM divisions ORDER BY CAST(id AS INTEGER)";
-        
-        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            
-            while (rs.next()) {
-                divisions.add(mapResultSetToDivision(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return divisions;
+        return dataService.getDivisions();
     }
 
     public ObservableList<DivisionModel> getObservableDivisions() {
@@ -39,19 +24,17 @@ public class DivisionDAO {
     }
 
     public DivisionModel getById(String id) {
-        String sql = "SELECT * FROM divisions WHERE id = ?";
-        
-        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToDivision(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return dataService.getDivisions().stream()
+                .filter(d -> d.getId() != null && d.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public DivisionModel getByName(String name) {
+        return dataService.getDivisions().stream()
+                .filter(d -> d.getName() != null && d.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<DivisionModel> search(String keyword) {
@@ -59,30 +42,10 @@ public class DivisionDAO {
             return getAll();
         }
         
-        List<DivisionModel> divisions = new ArrayList<>();
-        String sql = "SELECT * FROM divisions WHERE name LIKE ? OR bn_name LIKE ? ORDER BY CAST(id AS INTEGER)";
-        String pattern = "%" + keyword + "%";
-        
-        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, pattern);
-            pstmt.setString(2, pattern);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    divisions.add(mapResultSetToDivision(rs));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return divisions;
-    }
-
-    private DivisionModel mapResultSetToDivision(ResultSet rs) throws SQLException {
-        DivisionModel division = new DivisionModel();
-        division.setId(rs.getString("id"));
-        division.setName(rs.getString("name"));
-        division.setBnName(rs.getString("bn_name"));
-        division.setUrl(rs.getString("url"));
-        return division;
+        String lower = keyword.toLowerCase();
+        return dataService.getDivisions().stream()
+                .filter(d -> (d.getName() != null && d.getName().toLowerCase().contains(lower)) ||
+                             (d.getBnName() != null && d.getBnName().contains(keyword)))
+                .collect(Collectors.toList());
     }
 }

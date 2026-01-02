@@ -1,9 +1,9 @@
 package com.example.nutrimap;
 import com.example.nutrimap.controller.DashboardController;
 import com.example.nutrimap.dao.DatabaseManager;
-import com.example.nutrimap.dao.JsonToSqliteImporter;
 import com.example.nutrimap.dao.UserDAO;
 import com.example.nutrimap.model.UserModel;
+import com.example.nutrimap.service.GitHubJsonDataService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,18 +11,23 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 import javafx.application.HostServices;
+
 public class HelloApplication extends Application {
     private static HelloApplication instance;
+    
     public static HelloApplication getInstance() {
         return instance;
     }
+    
     @Override
     public void start(Stage stage) throws IOException {
         instance = this;
         
+        // Initialize database (for users, children, visits)
         DatabaseManager.getInstance();
-        JsonToSqliteImporter importer = new JsonToSqliteImporter();
-        importer.importAllData();
+        
+        // Preload location data from GitHub in background
+        GitHubJsonDataService.getInstance().preloadData();
         
         UserDAO userDAO = new UserDAO();
         UserModel adminUser = userDAO.getById(1);
@@ -38,6 +43,7 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
+    
     public static void main(String[] args) {
         launch();
     }

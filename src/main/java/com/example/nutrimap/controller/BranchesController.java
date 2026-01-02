@@ -6,21 +6,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import java.io.IOException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for the branches view.
+ * Branches data is fetched from GitHub (read-only).
+ */
 public class BranchesController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> divisionFilter;
@@ -34,7 +28,6 @@ public class BranchesController {
     @FXML private TableColumn<BranchModel, String> colUpazilla;
     @FXML private TableColumn<BranchModel, String> colArea;
     @FXML private TableColumn<BranchModel, String> colUrl;
-    @FXML private TableColumn<BranchModel, Void> colActions;
     @FXML private Pagination pagination;
     @FXML private Label resultsLabel;
     
@@ -98,38 +91,6 @@ public class BranchesController {
             }
         });
         
-        colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button editBtn = new Button("✏️");
-            private final Button deleteBtn = new Button("🗑️");
-            private final HBox container = new HBox(8, editBtn, deleteBtn);
-            
-            {
-                container.setAlignment(Pos.CENTER);
-                editBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10; -fx-background-radius: 5;");
-                deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10; -fx-background-radius: 5;");
-                
-                editBtn.setOnAction(event -> {
-                    BranchModel branch = getTableView().getItems().get(getIndex());
-                    handleEditBranch(branch);
-                });
-                
-                deleteBtn.setOnAction(event -> {
-                    BranchModel branch = getTableView().getItems().get(getIndex());
-                    handleDeleteBranch(branch);
-                });
-            }
-            
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(container);
-                }
-            }
-        });
-        
         setupFilters();
         
         colArea.prefWidthProperty().bind(branchesTable.widthProperty()
@@ -139,7 +100,6 @@ public class BranchesController {
             .subtract(colDistrict.widthProperty())
             .subtract(colUpazilla.widthProperty())
             .subtract(colUrl.widthProperty())
-            .subtract(colActions.widthProperty())
             .subtract(20));
         
         pagination.setPageFactory(this::createPage);
@@ -258,66 +218,6 @@ public class BranchesController {
         districtFilter.setValue(null);
         upazilaFilter.setValue(null);
         searchField.clear();
-    }
-    
-    @FXML
-    private void handleCreateBranch() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-branch-view.fxml"));
-            Parent root = loader.load();
-            CreateBranchController controller = loader.getController();
-            controller.setParentController(this);
-            
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initOwner(branchesTable.getScene().getWindow());
-            Scene scene = new Scene(root);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void handleEditBranch(BranchModel branch) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-branch-view.fxml"));
-            Parent root = loader.load();
-            CreateBranchController controller = loader.getController();
-            controller.setParentController(this);
-            controller.setMode(CreateBranchController.Mode.EDIT, branch);
-            
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initOwner(branchesTable.getScene().getWindow());
-            Scene scene = new Scene(root);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void handleDeleteBranch(BranchModel branch) {
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Delete Branch");
-        confirmDialog.setHeaderText("Are you sure you want to delete this branch?");
-        confirmDialog.setContentText("Branch: " + branch.getName() + " (" + branch.getDistrict() + ")\n\nThis action cannot be undone.");
-        
-        confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-        
-        Optional<ButtonType> result = confirmDialog.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.YES) {
-            branchDAO.deleteBranch(branch.getId());
-            refreshTable();
-            showSuccessAlert("Success", "Branch deleted successfully!");
-        }
     }
     
     public void refreshTable() {
