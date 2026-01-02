@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.nutrimap.controller.ChildProfileController"
+      spacing="20" style="-fx-padding: 30; -fx-background-color: #f4f6f8;">
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Button text="← Back" onAction="#handleBack" styleClass="back-button"/>
+        <Label text="Child Profile" styleClass="header-label"/>
+    </HBox>
+    <HBox spacing="30">
+        <VBox spacing="20" style="-fx-min-width: 350;">
+            <VBox styleClass="profile-card" spacing="15">
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Circle fx:id="photoCircle" radius="40" styleClass="photo-placeholder"/>
+                    <VBox spacing="5">
+                        <Label fx:id="childNameLabel" text="Child Name" styleClass="profile-name"/>
+                    </VBox>
+                </HBox>
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="120" prefWidth="120"/>
+                        <ColumnConstraints minWidth="180" prefWidth="180"/>
+                    </columnConstraints>
+                    <Label text="Father's Name:" styleClass="profile-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="fatherNameLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Mother's Name:" styleClass="profile-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="motherNameLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Contact:" styleClass="profile-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="contactLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Gender:" styleClass="profile-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="genderLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Date of Birth:" styleClass="profile-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="dobLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Age:" styleClass="profile-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                    <Label fx:id="ageLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    <Label text="Area:" styleClass="profile-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                    <Label fx:id="areaLabel" text="N/A" styleClass="profile-value" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    <Label text="Branch:" styleClass="profile-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                    <Label fx:id="branchLabel" text="N/A" styleClass="profile-value" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                </GridPane>
+            </VBox>
+            <VBox styleClass="profile-card" spacing="15">
+                <Label text="Health Status" styleClass="section-title"/>
+                <HBox spacing="30">
+                    <VBox spacing="8">
+                        <Label text="Nutrition Level" styleClass="profile-label"/>
+                        <Label fx:id="nutritionLevelLabel" text="N/A" styleClass="status-badge, status-na"/>
+                    </VBox>
+                    <VBox spacing="8">
+                        <Label text="Risk Level" styleClass="profile-label"/>
+                        <Label fx:id="riskLevelLabel" text="N/A" styleClass="status-badge, status-na"/>
+                    </VBox>
+                </HBox>
+                <Label fx:id="noVisitsLabel" text="No visits recorded yet" visible="false" managed="false" style="-fx-text-fill: #95a5a6; -fx-font-style: italic;"/>
+            </VBox>
+        </VBox>
+        <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <Label text="Visit History" styleClass="section-title"/>
+            <TableView fx:id="visitsTable" prefHeight="400" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" minWidth="50" prefWidth="50"/>
+                    <TableColumn fx:id="colVisitDate" text="Visit Date" minWidth="100" prefWidth="100"/>
+                    <TableColumn fx:id="colWeight" text="Weight (kg)" minWidth="90" prefWidth="90"/>
+                    <TableColumn fx:id="colHeight" text="Height (cm)" minWidth="90" prefWidth="90"/>
+                    <TableColumn fx:id="colMuac" text="MUAC (mm)" minWidth="90" prefWidth="90"/>
+                    <TableColumn fx:id="colRiskLevel" text="Risk Level" minWidth="80" prefWidth="80"/>
+                    <TableColumn fx:id="colNotes" text="Notes" minWidth="150" prefWidth="150"/>
+                    <TableColumn fx:id="colActions" text="Actions" minWidth="100" prefWidth="100"/>
+                </columns>
+            </TableView>
+            <Pagination fx:id="pagination" pageCount="1"/>
+            <HBox alignment="CENTER_RIGHT">
+                <Label fx:id="resultsLabel" text="Showing 0 visit records" style="-fx-text-fill: #95a5a6;"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

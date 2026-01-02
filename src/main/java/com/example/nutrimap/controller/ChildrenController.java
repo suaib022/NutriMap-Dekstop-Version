@@ -77,14 +77,21 @@ public class ChildrenController {
         });
         
         colActions.setCellFactory(col -> new TableCell<>() {
+            private final Button viewBtn = new Button("👁");
             private final Button editBtn = new Button("✏️");
             private final Button deleteBtn = new Button("🗑️");
-            private final HBox container = new HBox(8, editBtn, deleteBtn);
+            private final HBox container = new HBox(5, viewBtn, editBtn, deleteBtn);
             
             {
                 container.setAlignment(Pos.CENTER);
-                editBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10; -fx-background-radius: 5;");
-                deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10; -fx-background-radius: 5;");
+                viewBtn.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 8; -fx-background-radius: 5;");
+                editBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 8; -fx-background-radius: 5;");
+                deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 8; -fx-background-radius: 5;");
+                
+                viewBtn.setOnAction(event -> {
+                    ChildModel child = getTableView().getItems().get(getIndex());
+                    handleViewDetails(child);
+                });
                 
                 editBtn.setOnAction(event -> {
                     ChildModel child = getTableView().getItems().get(getIndex());
@@ -240,5 +247,55 @@ public class ChildrenController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void handleViewDetails(ChildModel child) {
+        if (child == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Child not found");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            javafx.scene.Node currentView = childrenTable.getParent();
+            javafx.scene.layout.Pane parentContainer = null;
+
+            javafx.scene.Node node = childrenTable;
+            while (node != null) {
+                if (node.getParent() instanceof javafx.scene.layout.StackPane) {
+                    parentContainer = (javafx.scene.layout.Pane) node.getParent();
+                    currentView = node;
+                    break;
+                }
+                node = node.getParent();
+            }
+
+            if (parentContainer == null) {
+                parentContainer = (javafx.scene.layout.Pane) childrenTable.getParent();
+                currentView = childrenTable.getParent();
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/child-profile-view.fxml"));
+            Parent profileView = loader.load();
+            ChildProfileController profileController = loader.getController();
+
+            profileController.setChild(child);
+            profileController.setParentContainer(parentContainer);
+            profileController.setPreviousView(currentView);
+            profileController.setChildrenController(this);
+
+            parentContainer.getChildren().clear();
+            parentContainer.getChildren().add(profileView);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to load child profile view");
+            alert.showAndWait();
+        }
     }
 }

@@ -28,7 +28,7 @@
             <TableColumn fx:id="colArea" text="Area" minWidth="200" prefWidth="200"/>
             <TableColumn fx:id="colBranch" text="Branch" minWidth="100" prefWidth="100"/>
             <TableColumn fx:id="colLastVisit" text="Last Visit" minWidth="90" prefWidth="90"/>
-            <TableColumn fx:id="colActions" text="Actions" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colActions" text="Actions" minWidth="140" prefWidth="140"/>
         </columns>
     </TableView>
     <Pagination fx:id="pagination" pageCount="10" />

@@ -86,6 +86,24 @@ public class VisitDAO {
         return visits;
     }
 
+    public VisitModel getLatestVisitByChildId(int childId) {
+        String sql = "SELECT v.*, c.full_name as child_name FROM visits v " +
+                     "LEFT JOIN children c ON v.child_id = c.id " +
+                     "WHERE v.child_id = ? AND v.deleted = 0 ORDER BY v.visit_date DESC LIMIT 1";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, childId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToVisit(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<VisitModel> search(String keyword) {
         if (keyword == null || keyword.isEmpty()) {
             return getAll();
