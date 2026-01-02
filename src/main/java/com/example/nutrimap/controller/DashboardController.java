@@ -48,8 +48,15 @@ public class DashboardController {
         loadView("/com/example/nutrimap/view/branches-view.fxml", null);
     }
     @FXML
+    private void showChildren() {
+        loadView("/com/example/nutrimap/view/children-view.fxml", null);
+    }
+    @FXML
+    private void showVisits() {
+        loadView("/com/example/nutrimap/view/visits-view.fxml", null);
+    }
+    @FXML
     private void handleLogout() {
-        System.out.println("Logout clicked");
         System.exit(0);
     }
     private interface ControllerInitializer {

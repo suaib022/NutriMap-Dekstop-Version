@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.nutrimap.controller.CreateChildController"
+            fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+    <VBox spacing="15" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" prefWidth="550" maxHeight="750">
+        <Label fx:id="titleLabel" text="Add New Child" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: black;"/>
+        
+        <HBox spacing="15">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Full Name *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <TextField fx:id="fullNameField" promptText="Enter child's full name"/>
+            </VBox>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Gender *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <ComboBox fx:id="genderCombo" promptText="Select Gender" maxWidth="Infinity"/>
+            </VBox>
+        </HBox>
+        
+        <VBox spacing="5">
+            <Label text="Date of Birth *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <DatePicker fx:id="dobPicker" maxWidth="400"/>
+        </VBox>
+        
+        <Label text="Parent's Information" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 10 0 5 0; -fx-text-fill: black;"/>
+        
+        <HBox spacing="15">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Father's Name" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <TextField fx:id="fathersNameField" promptText="Enter father's name"/>
+            </VBox>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Mother's Name" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <TextField fx:id="mothersNameField" promptText="Enter mother's name"/>
+            </VBox>
+        </HBox>
+        
+        <VBox spacing="5">
+            <Label text="Contact Number" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <TextField fx:id="contactField" promptText="Enter contact number"/>
+        </VBox>
+        
+        <Label text="Location" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 10 0 5 0; -fx-text-fill: black;"/>
+        
+        <HBox spacing="15">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Division *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <ComboBox fx:id="divisionCombo" promptText="Select Division" maxWidth="Infinity"/>
+            </VBox>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="District *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <ComboBox fx:id="districtCombo" promptText="Select District" maxWidth="Infinity" disable="true"/>
+            </VBox>
+        </HBox>
+        
+        <HBox spacing="15">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Upazilla *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <ComboBox fx:id="upazillaCombo" promptText="Select Upazilla" maxWidth="Infinity" disable="true"/>
+            </VBox>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Union *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <ComboBox fx:id="unionCombo" promptText="Select Union" maxWidth="Infinity" disable="true"/>
+            </VBox>
+        </HBox>
+        
+        <VBox spacing="5">
+            <Label text="Branch (Auto-fetched)" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <TextField fx:id="branchField" editable="false" style="-fx-background-color: #f0f0f0;"/>
+        </VBox>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 15 0 0 0;">
+            <Button text="Cancel" onAction="#handleCancel" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: black; -fx-border-width: 1;"/>
+            <Button fx:id="submitButton" text="Add Child" onAction="#handleCreate" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: black; -fx-border-width: 1;"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

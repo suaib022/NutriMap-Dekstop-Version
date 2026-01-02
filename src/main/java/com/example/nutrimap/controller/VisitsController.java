@@ -1,6 +1,9 @@
 package com.example.nutrimap.controller;
-import com.example.nutrimap.dao.UserDAO;
-import com.example.nutrimap.model.UserModel;
+
+import com.example.nutrimap.dao.VisitDAO;
+import com.example.nutrimap.model.VisitModel;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,51 +16,44 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import java.io.IOException;
 import java.util.Optional;
 
-public class UsersController {
+public class VisitsController {
     @FXML private TextField searchField;
-    @FXML private TableView<UserModel> usersTable;
-    @FXML private TableColumn<UserModel, Integer> colId;
-    @FXML private TableColumn<UserModel, String> colName;
-    @FXML private TableColumn<UserModel, String> colEmail;
-    @FXML private TableColumn<UserModel, String> colRole;
-    @FXML private TableColumn<UserModel, String> colStatus;
-    @FXML private TableColumn<UserModel, String> colImage;
-    @FXML private TableColumn<UserModel, Void> colActions;
-    @FXML private Label resultsLabel;
+    @FXML private TableView<VisitModel> visitsTable;
+    @FXML private TableColumn<VisitModel, Integer> colId;
+    @FXML private TableColumn<VisitModel, String> colChildName;
+    @FXML private TableColumn<VisitModel, String> colVisitDate;
+    @FXML private TableColumn<VisitModel, Double> colWeight;
+    @FXML private TableColumn<VisitModel, Double> colHeight;
+    @FXML private TableColumn<VisitModel, Integer> colMuac;
+    @FXML private TableColumn<VisitModel, String> colRiskLevel;
+    @FXML private TableColumn<VisitModel, String> colNotes;
+    @FXML private TableColumn<VisitModel, Void> colActions;
     @FXML private Pagination pagination;
+    @FXML private Label resultsLabel;
     
-    private UserDAO userDAO;
-    private FilteredList<UserModel> filteredData;
+    private VisitDAO visitDAO;
+    private ObservableList<VisitModel> masterData = FXCollections.observableArrayList();
+    private FilteredList<VisitModel> filteredData;
     private static final int ROWS_PER_PAGE = 10;
     
     @FXML
     public void initialize() {
-        userDAO = new UserDAO();
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
+        visitDAO = new VisitDAO();
+        masterData.addAll(visitDAO.getObservableVisits());
+        filteredData = new FilteredList<>(masterData, p -> true);
         
-        colStatus.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) setText(null);
-                else setText("Active");
-            }
-        });
-        
-        colImage.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) setText(null);
-                else setText("👤");
-            }
-        });
+        colId.setCellValueFactory(new PropertyValueFactory<>("visitId"));
+        colChildName.setCellValueFactory(new PropertyValueFactory<>("childName"));
+        colVisitDate.setCellValueFactory(new PropertyValueFactory<>("visitDate"));
+        colWeight.setCellValueFactory(new PropertyValueFactory<>("weightKg"));
+        colHeight.setCellValueFactory(new PropertyValueFactory<>("heightCm"));
+        colMuac.setCellValueFactory(new PropertyValueFactory<>("muacMm"));
+        colRiskLevel.setCellValueFactory(new PropertyValueFactory<>("riskLevel"));
+        colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
         
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button editBtn = new Button("✏️");
@@ -70,13 +66,13 @@ public class UsersController {
                 deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 5 10; -fx-background-radius: 5;");
                 
                 editBtn.setOnAction(event -> {
-                    UserModel user = getTableView().getItems().get(getIndex());
-                    handleEditUser(user);
+                    VisitModel visit = getTableView().getItems().get(getIndex());
+                    handleEditVisit(visit);
                 });
                 
                 deleteBtn.setOnAction(event -> {
-                    UserModel user = getTableView().getItems().get(getIndex());
-                    handleDeleteUser(user);
+                    VisitModel visit = getTableView().getItems().get(getIndex());
+                    handleDeleteVisit(visit);
                 });
             }
             
@@ -91,34 +87,34 @@ public class UsersController {
             }
         });
         
-        colEmail.prefWidthProperty().bind(usersTable.widthProperty()
+        colNotes.prefWidthProperty().bind(visitsTable.widthProperty()
             .subtract(colId.widthProperty())
-            .subtract(colImage.widthProperty())
-            .subtract(colName.widthProperty())
-            .subtract(colRole.widthProperty())
-            .subtract(colStatus.widthProperty())
+            .subtract(colChildName.widthProperty())
+            .subtract(colVisitDate.widthProperty())
+            .subtract(colWeight.widthProperty())
+            .subtract(colHeight.widthProperty())
+            .subtract(colMuac.widthProperty())
+            .subtract(colRiskLevel.widthProperty())
             .subtract(colActions.widthProperty())
             .subtract(20));
         
-        filteredData = new FilteredList<>(userDAO.getObservableUsers(), p -> true);
         pagination.setPageFactory(this::createPage);
-        updatePagination();
         
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(user -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                String lower = newValue.toLowerCase();
-                return user.getName().toLowerCase().contains(lower) || 
-                       user.getEmail().toLowerCase().contains(lower) ||
-                       user.getRole().toLowerCase().contains(lower);
-            });
-            updatePagination();
-        });
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> updateFilter());
+        updateFilter();
     }
     
-    private void updatePagination() {
+    private void updateFilter() {
+        String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        
+        filteredData.setPredicate(visit -> {
+            if (search.isEmpty()) return true;
+            
+            return (visit.getChildName() != null && visit.getChildName().toLowerCase().contains(search)) ||
+                   (visit.getVisitDate() != null && visit.getVisitDate().toLowerCase().contains(search)) ||
+                   (visit.getNotes() != null && visit.getNotes().toLowerCase().contains(search));
+        });
+        
         int totalItems = filteredData.size();
         int pageCount = (totalItems / ROWS_PER_PAGE) + (totalItems % ROWS_PER_PAGE > 0 ? 1 : 0);
         pagination.setPageCount(Math.max(1, pageCount));
@@ -136,31 +132,25 @@ public class UsersController {
         int fromIndex = pageIndex * ROWS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, filteredData.size());
         if (fromIndex > toIndex) fromIndex = toIndex;
-        javafx.collections.ObservableList<UserModel> pageItems = javafx.collections.FXCollections.observableArrayList();
-        for(int i = fromIndex; i < toIndex; i++) {
+        ObservableList<VisitModel> pageItems = FXCollections.observableArrayList();
+        for (int i = fromIndex; i < toIndex; i++) {
             pageItems.add(filteredData.get(i));
         }
-        usersTable.setItems(pageItems);
+        visitsTable.setItems(pageItems);
     }
-    
-    private void loadData() {
-         filteredData = new FilteredList<>(userDAO.getObservableUsers(), p -> true);
-         updatePagination();
-    }
-    
     
     @FXML
-    private void handleCreateUser() {
+    private void handleCreateVisit() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-user-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-visit-view.fxml"));
             Parent root = loader.load();
-            CreateUserController controller = loader.getController();
+            CreateVisitController controller = loader.getController();
             controller.setParentController(this);
             
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initOwner(usersTable.getScene().getWindow());
+            stage.initOwner(visitsTable.getScene().getWindow());
             Scene scene = new Scene(root);
             scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             stage.setScene(scene);
@@ -171,18 +161,18 @@ public class UsersController {
         }
     }
     
-    private void handleEditUser(UserModel user) {
+    private void handleEditVisit(VisitModel visit) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-user-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/nutrimap/view/create-visit-view.fxml"));
             Parent root = loader.load();
-            CreateUserController controller = loader.getController();
+            CreateVisitController controller = loader.getController();
             controller.setParentController(this);
-            controller.setMode(CreateUserController.Mode.EDIT, user);
+            controller.setMode(CreateVisitController.Mode.EDIT, visit);
             
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initOwner(usersTable.getScene().getWindow());
+            stage.initOwner(visitsTable.getScene().getWindow());
             Scene scene = new Scene(root);
             scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             stage.setScene(scene);
@@ -193,25 +183,27 @@ public class UsersController {
         }
     }
     
-    private void handleDeleteUser(UserModel user) {
+    private void handleDeleteVisit(VisitModel visit) {
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Delete User");
-        confirmDialog.setHeaderText("Are you sure you want to delete this user?");
-        confirmDialog.setContentText("User: " + user.getName() + " (" + user.getEmail() + ")\n\nThis action cannot be undone.");
+        confirmDialog.setTitle("Delete Visit");
+        confirmDialog.setHeaderText("Are you sure you want to delete this visit record?");
+        confirmDialog.setContentText("Visit ID: " + visit.getVisitId() + " for " + visit.getChildName() + "\n\nThis action cannot be undone.");
         
         confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         
         Optional<ButtonType> result = confirmDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.YES) {
-            userDAO.deleteUser(user.getId());
+            visitDAO.deleteVisit(visit.getVisitId());
             refreshTable();
-            showSuccessAlert("Success", "User deleted successfully!");
+            showSuccessAlert("Success", "Visit record deleted successfully!");
         }
     }
     
     public void refreshTable() {
-         userDAO = new UserDAO();
-         loadData();
+        visitDAO = new VisitDAO();
+        masterData.clear();
+        masterData.addAll(visitDAO.getObservableVisits());
+        updateFilter();
     }
     
     public void showSuccessAlert(String title, String message) {

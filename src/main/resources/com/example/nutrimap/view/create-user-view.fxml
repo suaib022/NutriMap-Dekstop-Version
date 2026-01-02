@@ -9,7 +9,7 @@
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.nutrimap.controller.CreateUserController"
       spacing="15" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" prefWidth="400">
-    <Label text="Create New User" styleClass="header-label"/>
+    <Label fx:id="titleLabel" text="Create New User" styleClass="header-label"/>
     <VBox spacing="5">
         <Label text="Full Name"/>
         <TextField fx:id="nameField" promptText="Enter full name"/>
@@ -28,6 +28,6 @@
     </VBox>
     <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
         <Button text="Cancel" onAction="#handleCancel" styleClass="secondary-button"/>
-        <Button text="Create User" onAction="#handleCreate" styleClass="action-button"/>
+        <Button fx:id="submitButton" text="Create User" onAction="#handleCreate" styleClass="action-button"/>
     </HBox>
 </VBox>

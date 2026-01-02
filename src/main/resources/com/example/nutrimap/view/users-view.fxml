@@ -24,7 +24,7 @@
             <TableColumn fx:id="colEmail" text="Email" minWidth="200" prefWidth="200"/>
             <TableColumn fx:id="colRole" text="Role" minWidth="100" prefWidth="100"/>
             <TableColumn fx:id="colStatus" text="Status" minWidth="100" prefWidth="100"/>
-            <TableColumn fx:id="colCheck" text="Select" minWidth="60" prefWidth="60"/>
+            <TableColumn fx:id="colActions" text="Actions" minWidth="120" prefWidth="120"/>
         </columns>
     </TableView>
     <Pagination fx:id="pagination" pageCount="10" />

@@ -1,5 +1,7 @@
 package com.example.nutrimap;
 import com.example.nutrimap.controller.DashboardController;
+import com.example.nutrimap.dao.DatabaseManager;
+import com.example.nutrimap.dao.JsonToSqliteImporter;
 import com.example.nutrimap.dao.UserDAO;
 import com.example.nutrimap.model.UserModel;
 import javafx.application.Application;
@@ -17,6 +19,11 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         instance = this;
+        
+        DatabaseManager.getInstance();
+        JsonToSqliteImporter importer = new JsonToSqliteImporter();
+        importer.importAllData();
+        
         UserDAO userDAO = new UserDAO();
         UserModel adminUser = userDAO.getById(1);
         if (adminUser == null) {

@@ -1,87 +1,155 @@
 package com.example.nutrimap.dao;
+
 import com.example.nutrimap.model.UserModel;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.io.*;
-import java.lang.reflect.Type;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
 public class UserDAO {
-    private static final String FILE_PATH = "src/main/resources/data/user-json.json";
-    private List<UserModel> users;
-    private final Gson gson;
+    private final DatabaseManager dbManager;
+
     public UserDAO() {
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
-        this.users = new ArrayList<>();
-        loadUsers();
+        this.dbManager = DatabaseManager.getInstance();
     }
-    private void loadUsers() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) {
-            return;
-        }
-        try (Reader reader = new FileReader(file)) {
-            Type listType = new TypeToken<ArrayList<UserModel>>(){}.getType();
-            List<UserModel> loaded = gson.fromJson(reader, listType);
-            if (loaded != null) {
-                users = loaded;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void saveUsers() {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
-            gson.toJson(users, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
     public List<UserModel> getAllUsers() {
-        return new ArrayList<>(users);
-    }
-    public ObservableList<UserModel> getObservableUsers() {
-        return FXCollections.observableArrayList(users);
-    }
-    public UserModel getById(int id) {
-        return users.stream().filter(u -> u.getId() == id).findFirst().orElse(null);
-    }
-    public UserModel getByEmail(String email) {
-        return users.stream().filter(u -> u.getEmail().equalsIgnoreCase(email)).findFirst().orElse(null);
-    }
-    public void addUser(UserModel user) {
-        int maxId = users.stream().mapToInt(UserModel::getId).max().orElse(0);
-        user.setId(maxId + 1);
-        users.add(user);
-        saveUsers();
-    }
-    public void updateUser(UserModel user) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == user.getId()) {
-                users.set(i, user);
-                break;
+        List<UserModel> users = new ArrayList<>();
+        String sql = "SELECT * FROM users ORDER BY id";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        saveUsers();
+        return users;
     }
+
+    public ObservableList<UserModel> getObservableUsers() {
+        return FXCollections.observableArrayList(getAllUsers());
+    }
+
+    public UserModel getById(int id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public UserModel getByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ? COLLATE NOCASE";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void addUser(UserModel user) {
+        String sql = "INSERT INTO users (name, email, password, role, image_path) VALUES (?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getPassword());
+            pstmt.setString(4, user.getRole());
+            pstmt.setString(5, user.getImagePath());
+            pstmt.executeUpdate();
+            
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateUser(UserModel user) {
+        String sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, image_path = ? WHERE id = ?";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getPassword());
+            pstmt.setString(4, user.getRole());
+            pstmt.setString(5, user.getImagePath());
+            pstmt.setInt(6, user.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void deleteUser(int id) {
-        users.removeIf(u -> u.getId() == id);
-        saveUsers();
+        String sql = "DELETE FROM users WHERE id = ?";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
     public List<UserModel> search(String keyword) {
         if (keyword == null || keyword.isEmpty()) {
             return getAllUsers();
         }
-        String lower = keyword.toLowerCase();
-        return users.stream()
-                .filter(u -> u.getName().toLowerCase().contains(lower) ||
-                             u.getEmail().toLowerCase().contains(lower) ||
-                             u.getRole().toLowerCase().contains(lower))
-                .collect(Collectors.toList());
+        
+        List<UserModel> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE name LIKE ? OR email LIKE ? OR role LIKE ? ORDER BY id";
+        String pattern = "%" + keyword + "%";
+        
+        try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, pattern);
+            pstmt.setString(2, pattern);
+            pstmt.setString(3, pattern);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    users.add(mapResultSetToUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    private UserModel mapResultSetToUser(ResultSet rs) throws SQLException {
+        UserModel user = new UserModel();
+        user.setId(rs.getInt("id"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setRole(rs.getString("role"));
+        user.setImagePath(rs.getString("image_path"));
+        return user;
     }
 }

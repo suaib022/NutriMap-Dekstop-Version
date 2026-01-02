@@ -18,6 +18,8 @@
             <Button text="Profile" onAction="#showProfile" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button text="Users" onAction="#showUsers" styleClass="sidebar-button" maxWidth="Infinity"/>
             <Button text="Branches" onAction="#showBranches" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="Children" onAction="#showChildren" styleClass="sidebar-button" maxWidth="Infinity"/>
+            <Button text="Visits" onAction="#showVisits" styleClass="sidebar-button" maxWidth="Infinity"/>
             <VBox VBox.vgrow="ALWAYS"/> 
             <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10 0 20 0;">
                 <Circle fx:id="avatarCircle" radius="20" fill="gray"/>

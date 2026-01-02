@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.nutrimap.controller.CreateVisitController"
+            fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+    <VBox spacing="15" style="-fx-padding: 30; -fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" prefWidth="500" maxHeight="600">
+        <Label fx:id="titleLabel" text="Add New Visit" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: black;"/>
+        
+        <VBox spacing="5">
+            <Label text="Child *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <ComboBox fx:id="childCombo" promptText="Select Child" maxWidth="Infinity"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Visit Date *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <DatePicker fx:id="visitDatePicker" maxWidth="Infinity"/>
+        </VBox>
+        
+        <HBox spacing="15">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Weight (kg) *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <TextField fx:id="weightField" promptText="e.g., 12.5"/>
+            </VBox>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Height (cm) *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+                <TextField fx:id="heightField" promptText="e.g., 85.0"/>
+            </VBox>
+        </HBox>
+        
+        <VBox spacing="5">
+            <Label text="MUAC (mm) *" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <TextField fx:id="muacField" promptText="e.g., 125"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Notes" style="-fx-font-weight: bold; -fx-text-fill: black;"/>
+            <TextArea fx:id="notesArea" promptText="Additional notes..." prefRowCount="3"/>
+        </VBox>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 15 0 0 0;">
+            <Button text="Cancel" onAction="#handleCancel" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: black; -fx-border-width: 1;"/>
+            <Button fx:id="submitButton" text="Add Visit" onAction="#handleCreate" style="-fx-background-color: #e0e0e0; -fx-text-fill: black; -fx-padding: 10 20; -fx-cursor: hand; -fx-border-color: black; -fx-border-width: 1;"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

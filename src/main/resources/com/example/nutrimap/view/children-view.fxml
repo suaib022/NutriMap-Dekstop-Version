@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.nutrimap.controller.ChildrenController"
+      spacing="20" style="-fx-padding: 30;">
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Children Management" styleClass="header-label"/>
+        <VBox HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search children..." prefWidth="250"/>
+        <Button text="+ Add Child" onAction="#handleCreateChild" styleClass="action-button"/>
+    </HBox>
+    <TableView fx:id="childrenTable" prefHeight="600">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" minWidth="40" prefWidth="40"/>
+            <TableColumn fx:id="colFullName" text="Full Name" minWidth="120" prefWidth="120"/>
+            <TableColumn fx:id="colGender" text="Gender" minWidth="60" prefWidth="60"/>
+            <TableColumn fx:id="colAge" text="Age" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colFathersName" text="Father's Name" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colMothersName" text="Mother's Name" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colContact" text="Contact" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colArea" text="Area" minWidth="200" prefWidth="200"/>
+            <TableColumn fx:id="colBranch" text="Branch" minWidth="100" prefWidth="100"/>
+            <TableColumn fx:id="colLastVisit" text="Last Visit" minWidth="90" prefWidth="90"/>
+            <TableColumn fx:id="colActions" text="Actions" minWidth="100" prefWidth="100"/>
+        </columns>
+    </TableView>
+    <Pagination fx:id="pagination" pageCount="10" />
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="resultsLabel" text="Showing 0 results" style="-fx-text-fill: #95a5a6;"/>
+    </HBox>
+</VBox>
