@@ -1,8 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.layout.VBox?>
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      alignment="CENTER" spacing="20">
-    <Label text="Welcome to NutriMap!" styleClass="header-label"/>
-    <Label text="Select an option from the sidebar to get started." style="-fx-text-fill: #7f8c8d; -fx-font-size: 16px;"/>
-</VBox>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.nutrimap.controller.HomeController"
+            fitToWidth="true" fitToHeight="true">
+    
+    <VBox spacing="25">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        
+        <!-- Header -->
+        <Label text="Dashboard" styleClass="header-label"/>
+        
+        <!-- Summary Cards Row -->
+        <HBox spacing="15">
+            <!-- Total Children Card -->
+            <VBox styleClass="stat-card" spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Total Children" styleClass="stat-card-title"/>
+                <Label fx:id="totalChildrenLabel" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            
+            <!-- Total Visits Card -->
+            <VBox styleClass="stat-card" spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Total Visits" styleClass="stat-card-title"/>
+                <Label fx:id="totalVisitsLabel" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            
+            <!-- High Risk Card -->
+            <VBox styleClass="stat-card, stat-card-danger" spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="High Risk" styleClass="stat-card-title"/>
+                <Label fx:id="highRiskLabel" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            
+            <!-- Medium Risk Card -->
+            <VBox styleClass="stat-card, stat-card-warning" spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Medium Risk" styleClass="stat-card-title"/>
+                <Label fx:id="mediumRiskLabel" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            
+            <!-- Low Risk Card -->
+            <VBox styleClass="stat-card, stat-card-success" spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Low Risk" styleClass="stat-card-title"/>
+                <Label fx:id="lowRiskLabel" text="0" styleClass="stat-card-value"/>
+            </VBox>
+        </HBox>
+        
+        <!-- Charts Row -->
+        <HBox spacing="20">
+            <!-- Risk Distribution Pie Chart -->
+            <VBox styleClass="chart-card" spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Risk Distribution" styleClass="section-title"/>
+                <PieChart fx:id="riskPieChart" prefHeight="250" legendVisible="true"/>
+            </VBox>
+            
+            <!-- Monthly Visits Line Chart -->
+            <VBox styleClass="chart-card" spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Monthly Visits (Last 6 Months)" styleClass="section-title"/>
+                <LineChart fx:id="visitsLineChart" prefHeight="250" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis label="Month"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Visits"/>
+                    </yAxis>
+                </LineChart>
+            </VBox>
+        </HBox>
+        
+        <!-- Area-wise Table -->
+        <VBox styleClass="chart-card" spacing="10">
+            <Label text="Area-wise Nutrition Summary" styleClass="section-title"/>
+            <TableView fx:id="areaTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="areaColumn" text="District" prefWidth="200"/>
+                    <TableColumn fx:id="childrenColumn" text="Total Children" prefWidth="120"/>
+                    <TableColumn fx:id="highColumn" text="High Risk" prefWidth="100"/>
+                    <TableColumn fx:id="mediumColumn" text="Medium Risk" prefWidth="100"/>
+                    <TableColumn fx:id="lowColumn" text="Low Risk" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane>

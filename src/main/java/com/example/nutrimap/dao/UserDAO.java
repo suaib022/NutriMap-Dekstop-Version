@@ -70,6 +70,18 @@ public class UserDAO {
         return null;
     }
 
+    /**
+     * Authenticate user by email and password.
+     * @return UserModel if credentials match, null otherwise
+     */
+    public UserModel authenticate(String email, String password) {
+        UserModel user = getByEmail(email);
+        if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
+
     public void addUser(UserModel user) {
         String sql = "INSERT INTO users (name, email, password, role, image_path) VALUES (?, ?, ?, ?, ?)";
         

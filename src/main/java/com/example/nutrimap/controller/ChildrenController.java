@@ -17,7 +17,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.FileChooser;
 
+import com.example.nutrimap.service.ExportService;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -297,5 +301,51 @@ public class ChildrenController {
             alert.setContentText("Failed to load child profile view");
             alert.showAndWait();
         }
+    }
+    
+    @FXML
+    private void handleExportCsv() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Children to CSV");
+        fileChooser.setInitialFileName("children_export.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        
+        File file = fileChooser.showSaveDialog(childrenTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                ExportService.exportChildrenToCsv(childDAO.getAll(), file);
+                showSuccessAlert("Export Successful", "Children data exported to CSV successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorAlert("Export Failed", "Failed to export data: " + e.getMessage());
+            }
+        }
+    }
+    
+    @FXML
+    private void handleExportPdf() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Children to PDF");
+        fileChooser.setInitialFileName("children_report.pdf");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+        
+        File file = fileChooser.showSaveDialog(childrenTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                ExportService.exportChildrenToPdf(childDAO.getAll(), file);
+                showSuccessAlert("Export Successful", "Children report exported to PDF successfully!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                showErrorAlert("Export Failed", "Failed to export PDF: " + e.getMessage());
+            }
+        }
+    }
+    
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

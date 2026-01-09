@@ -5,6 +5,8 @@ module com.example.nutrimap {
     requires com.google.gson;
     requires java.sql;
     requires java.net.http;
+    requires java.desktop;
+    requires com.github.librepdf.openpdf;
     opens com.example.nutrimap to javafx.fxml;
     exports com.example.nutrimap;
     exports com.example.nutrimap.controller;

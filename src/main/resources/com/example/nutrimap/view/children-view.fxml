@@ -15,6 +15,8 @@
         <VBox HBox.hgrow="ALWAYS"/>
         <TextField fx:id="searchField" promptText="Search children..." prefWidth="250"/>
         <Button text="+ Add Child" onAction="#handleCreateChild" styleClass="action-button"/>
+        <Button fx:id="exportCsvButton" text="📄 CSV" onAction="#handleExportCsv" styleClass="secondary-button"/>
+        <Button fx:id="exportPdfButton" text="📑 PDF" onAction="#handleExportPdf" styleClass="secondary-button"/>
     </HBox>
     <TableView fx:id="childrenTable" prefHeight="600">
         <columns>

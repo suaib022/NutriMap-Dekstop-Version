@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.example.nutrimap.util.NutritionRiskCalculator;
+
 public class CreateVisitController {
     
     public enum Mode {
@@ -171,7 +173,10 @@ public class CreateVisitController {
             newVisit.setHeightCm(height);
             newVisit.setMuacMm(muac);
             newVisit.setNotes(notes);
-            newVisit.setRiskLevel("N/A");
+            
+            // Auto-calculate risk level from MUAC
+            String riskLevel = NutritionRiskCalculator.calculateRiskFromMuac(muac);
+            newVisit.setRiskLevel(riskLevel);
             
             visitDAO.addVisit(newVisit);
             
@@ -188,6 +193,10 @@ public class CreateVisitController {
             editingVisit.setHeightCm(height);
             editingVisit.setMuacMm(muac);
             editingVisit.setNotes(notes);
+            
+            // Recalculate risk level on edit
+            String riskLevel = NutritionRiskCalculator.calculateRiskFromMuac(muac);
+            editingVisit.setRiskLevel(riskLevel);
             
             visitDAO.updateVisit(editingVisit);
             

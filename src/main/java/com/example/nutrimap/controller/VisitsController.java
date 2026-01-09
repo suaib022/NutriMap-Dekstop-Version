@@ -16,7 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.FileChooser;
 
+import com.example.nutrimap.service.ExportService;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -208,6 +212,52 @@ public class VisitsController {
     
     public void showSuccessAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    @FXML
+    private void handleExportCsv() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Visits to CSV");
+        fileChooser.setInitialFileName("visits_export.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        
+        File file = fileChooser.showSaveDialog(visitsTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                ExportService.exportVisitsToCsv(visitDAO.getAll(), file);
+                showSuccessAlert("Export Successful", "Visits data exported to CSV successfully!");
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorAlert("Export Failed", "Failed to export data: " + e.getMessage());
+            }
+        }
+    }
+    
+    @FXML
+    private void handleExportPdf() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Visits to PDF");
+        fileChooser.setInitialFileName("visits_report.pdf");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+        
+        File file = fileChooser.showSaveDialog(visitsTable.getScene().getWindow());
+        if (file != null) {
+            try {
+                ExportService.exportVisitsToPdf(visitDAO.getAll(), file);
+                showSuccessAlert("Export Successful", "Visits report exported to PDF successfully!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                showErrorAlert("Export Failed", "Failed to export PDF: " + e.getMessage());
+            }
+        }
+    }
+    
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
