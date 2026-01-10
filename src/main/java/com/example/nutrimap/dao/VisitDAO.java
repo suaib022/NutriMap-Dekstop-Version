@@ -71,7 +71,7 @@ public class VisitDAO {
         List<VisitModel> visits = new ArrayList<>();
         String sql = "SELECT v.*, c.full_name as child_name FROM visits v " +
                      "LEFT JOIN children c ON v.child_id = c.id " +
-                     "WHERE v.child_id = ? AND v.deleted = 0 ORDER BY v.visit_date DESC";
+                     "WHERE v.child_id = ? AND v.deleted = 0 ORDER BY v.visit_date DESC, v.visit_id DESC";
         
         try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, childId);
@@ -89,7 +89,7 @@ public class VisitDAO {
     public VisitModel getLatestVisitByChildId(int childId) {
         String sql = "SELECT v.*, c.full_name as child_name FROM visits v " +
                      "LEFT JOIN children c ON v.child_id = c.id " +
-                     "WHERE v.child_id = ? AND v.deleted = 0 ORDER BY v.visit_date DESC LIMIT 1";
+                     "WHERE v.child_id = ? AND v.deleted = 0 ORDER BY v.visit_date DESC, v.visit_id DESC LIMIT 1";
         
         try (PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, childId);

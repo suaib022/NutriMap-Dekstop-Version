@@ -165,6 +165,53 @@ public class CreateVisitController {
             return;
         }
         
+        // Get previous visit for trend analysis
+        List<VisitModel> previousVisits = visitDAO.getByChildId(selectedChild.getId());
+        VisitModel previousVisit = null;
+        if (!previousVisits.isEmpty()) {
+            // In CREATE mode, the first visit is the previous one
+            // In EDIT mode, we need to skip the current visit being edited
+            if (currentMode == Mode.CREATE) {
+                previousVisit = previousVisits.get(0);
+            } else if (previousVisits.size() > 1) {
+                previousVisit = previousVisits.get(1);
+            }
+        }
+        
+        // Get child data
+        String birthDateStr = selectedChild.getDateOfBirth();
+        String visitDateStr = DATE_FORMATTER.format(visitDate);
+        String sex = selectedChild.getGender(); // "Male" or "Female"
+        
+        // Get previous values for trend analysis (MUAC in mm)
+        Double muacPrevMm = null;
+        Double weightPrevKg = null;
+        if (previousVisit != null) {
+            if (previousVisit.getMuacMm() > 0) {
+                muacPrevMm = (double) previousVisit.getMuacMm();
+            }
+            if (previousVisit.getWeightKg() > 0) {
+                weightPrevKg = previousVisit.getWeightKg();
+            }
+        }
+        
+        // Evaluate using the new method that:
+        // - Calculates age from birthDate + visitDate
+        // - Converts MUAC from mm to cm
+        // - Computes WHO z-score
+        NutritionRiskCalculator.NutritionRiskResult result = NutritionRiskCalculator.evaluateFromVisitData(
+            birthDateStr,
+            visitDateStr,
+            sex,
+            height,
+            weight,
+            muac, // MUAC in mm as entered
+            muacPrevMm,
+            weightPrevKg
+        );
+        
+        String riskLevel = result.getRiskLevel();
+        
         if (currentMode == Mode.CREATE) {
             VisitModel newVisit = new VisitModel();
             newVisit.setChildId(selectedChild.getId());
@@ -173,9 +220,6 @@ public class CreateVisitController {
             newVisit.setHeightCm(height);
             newVisit.setMuacMm(muac);
             newVisit.setNotes(notes);
-            
-            // Auto-calculate risk level from MUAC
-            String riskLevel = NutritionRiskCalculator.calculateRiskFromMuac(muac);
             newVisit.setRiskLevel(riskLevel);
             
             visitDAO.addVisit(newVisit);
@@ -193,9 +237,6 @@ public class CreateVisitController {
             editingVisit.setHeightCm(height);
             editingVisit.setMuacMm(muac);
             editingVisit.setNotes(notes);
-            
-            // Recalculate risk level on edit
-            String riskLevel = NutritionRiskCalculator.calculateRiskFromMuac(muac);
             editingVisit.setRiskLevel(riskLevel);
             
             visitDAO.updateVisit(editingVisit);

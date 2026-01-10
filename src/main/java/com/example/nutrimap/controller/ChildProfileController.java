@@ -3,6 +3,7 @@ package com.example.nutrimap.controller;
 import com.example.nutrimap.dao.VisitDAO;
 import com.example.nutrimap.model.ChildModel;
 import com.example.nutrimap.model.VisitModel;
+import com.example.nutrimap.util.NutritionRiskCalculator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -167,9 +168,10 @@ public class ChildProfileController {
             } else {
                 noVisitsLabel.setVisible(false);
                 noVisitsLabel.setManaged(false);
+                // Get latest visit (index 0) and previous visit (index 1) for trend analysis
                 VisitModel latestVisit = visits.get(0);
-                computeAndDisplayNutritionLevel(latestVisit);
-                displayRiskLevel(latestVisit);
+                VisitModel previousVisit = visits.size() > 1 ? visits.get(1) : null;
+                computeAndDisplayNutritionAndRisk(latestVisit, previousVisit);
             }
 
             updatePagination();
@@ -186,61 +188,73 @@ public class ChildProfileController {
         new Thread(loadTask).start();
     }
 
-    private void computeAndDisplayNutritionLevel(VisitModel visit) {
-        if (visit == null) {
+    /**
+     * Compute and display both nutrition level and risk level using WHO Growth Standards.
+     * Uses the LATEST visit data for current values and previous visit for trend analysis.
+     * Age is calculated from child's birthDate and visit date (not from today).
+     * MUAC is converted from mm to cm automatically.
+     * 
+     * @param latestVisit The most recent visit record
+     * @param previousVisit The second most recent visit record (nullable, for trend analysis)
+     */
+    private void computeAndDisplayNutritionAndRisk(VisitModel latestVisit, VisitModel previousVisit) {
+        if (latestVisit == null) {
             setStatusBadge(nutritionLevelLabel, "N/A", "status-na");
-            return;
-        }
-
-        int muacMm = visit.getMuacMm();
-        double muacCm = muacMm / 10.0;
-
-        if (muacMm > 0) {
-            if (muacCm < 11.5) {
-                setStatusBadge(nutritionLevelLabel, "Severe Malnutrition", "status-severe");
-            } else if (muacCm < 12.5) {
-                setStatusBadge(nutritionLevelLabel, "Moderate Malnutrition", "status-moderate");
-            } else {
-                setStatusBadge(nutritionLevelLabel, "Normal", "status-normal");
-            }
-        } else {
-            double weight = visit.getWeightKg();
-            double height = visit.getHeightCm();
-            if (weight > 0 && height > 0) {
-                double heightM = height / 100.0;
-                double bmi = weight / (heightM * heightM);
-                if (bmi < 16) {
-                    setStatusBadge(nutritionLevelLabel, "Severe Malnutrition", "status-severe");
-                } else if (bmi < 17) {
-                    setStatusBadge(nutritionLevelLabel, "Moderate Malnutrition", "status-moderate");
-                } else {
-                    setStatusBadge(nutritionLevelLabel, "Normal", "status-normal");
-                }
-            } else {
-                setStatusBadge(nutritionLevelLabel, "Unknown", "status-na");
-            }
-        }
-    }
-
-    private void displayRiskLevel(VisitModel visit) {
-        if (visit == null || visit.getRiskLevel() == null || visit.getRiskLevel().isEmpty() || "N/A".equalsIgnoreCase(visit.getRiskLevel())) {
             setStatusBadge(riskLevelLabel, "N/A", "status-na");
             return;
         }
 
-        String risk = visit.getRiskLevel().toUpperCase();
-        switch (risk) {
-            case "LOW":
-                setStatusBadge(riskLevelLabel, "LOW", "status-low");
-                break;
-            case "MEDIUM":
-                setStatusBadge(riskLevelLabel, "MEDIUM", "status-medium");
-                break;
-            case "HIGH":
-                setStatusBadge(riskLevelLabel, "HIGH", "status-high");
-                break;
-            default:
-                setStatusBadge(riskLevelLabel, visit.getRiskLevel(), "status-na");
+        // Get child data
+        String birthDateStr = child.getDateOfBirth();
+        String sex = child.getGender(); // "Male" or "Female"
+        
+        // Get current visit data (MUAC stored in mm in database)
+        String visitDateStr = latestVisit.getVisitDate();
+        double heightCm = latestVisit.getHeightCm();
+        double weightKg = latestVisit.getWeightKg();
+        int muacMm = latestVisit.getMuacMm();
+        
+        // Get previous visit values for trend analysis (if available)
+        Double muacPrevMm = null;
+        Double weightPrevKg = null;
+        if (previousVisit != null) {
+            if (previousVisit.getMuacMm() > 0) {
+                muacPrevMm = (double) previousVisit.getMuacMm();
+            }
+            if (previousVisit.getWeightKg() > 0) {
+                weightPrevKg = previousVisit.getWeightKg();
+            }
+        }
+        
+        // Use the new evaluateFromVisitData method
+        // This automatically:
+        // - Calculates age from birthDate and visitDate
+        // - Converts MUAC from mm to cm
+        // - Computes WHO z-score
+        NutritionRiskCalculator.NutritionRiskResult result = NutritionRiskCalculator.evaluateFromVisitData(
+            birthDateStr,
+            visitDateStr,
+            sex,
+            heightCm,
+            weightKg,
+            muacMm,
+            muacPrevMm,
+            weightPrevKg
+        );
+        
+        // Display nutrition level
+        String nutritionDisplay = result.getNutritionLevelDisplay();
+        String nutritionStyle = NutritionRiskCalculator.getNutritionStyleClass(result.getNutritionLevel());
+        setStatusBadge(nutritionLevelLabel, nutritionDisplay, nutritionStyle);
+        
+        // Display risk level
+        String riskDisplay = result.getRiskLevelDisplay();
+        String riskStyle = NutritionRiskCalculator.getRiskStyleClass(result.getRiskLevel());
+        setStatusBadge(riskLevelLabel, riskDisplay, riskStyle);
+        
+        // Log z-score for debugging
+        if (result.hasValidZScore()) {
+            System.out.println("Child " + child.getFullName() + " WHZ z-score: " + result.getZScoreDisplay());
         }
     }
 

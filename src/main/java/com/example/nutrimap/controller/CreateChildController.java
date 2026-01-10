@@ -103,11 +103,13 @@ public class CreateChildController {
                 unionCombo.setItems(FXCollections.observableArrayList());
                 unionCombo.setDisable(true);
                 
-                branchField.setText("");
-                matchedBranch = null;
+                // Auto-fetch branch based on district (one branch per district)
+                fetchBranchByDistrict(newVal);
             } else {
                 upazillaCombo.setDisable(true);
                 upazillaCombo.setValue(null);
+                branchField.setText("");
+                matchedBranch = null;
             }
         });
         
@@ -117,41 +119,30 @@ public class CreateChildController {
                 List<UnionModel> unions = unionDAO.getByUpazilaId(newVal.getId());
                 unionCombo.setItems(FXCollections.observableArrayList(unions));
                 unionCombo.setValue(null);
-                
-                fetchBranch();
             } else {
                 unionCombo.setDisable(true);
                 unionCombo.setValue(null);
-                branchField.setText("");
-                matchedBranch = null;
             }
-        });
-        
-        unionCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            fetchBranch();
         });
     }
     
-    private void fetchBranch() {
-        DivisionModel division = divisionCombo.getValue();
-        DistrictModel district = districtCombo.getValue();
-        UpazilaModel upazilla = upazillaCombo.getValue();
-        
-        if (division != null && district != null && upazilla != null) {
-            List<BranchModel> branches = branchDAO.getByUpazilla(upazilla.getName());
+    /**
+     * Auto-fetch branch based on district.
+     * Since we have 64 branches (one per district), branch is determined by district alone.
+     */
+    private void fetchBranchByDistrict(DistrictModel district) {
+        if (district != null) {
+            List<BranchModel> branches = branchDAO.getByDistrict(district.getName());
             if (!branches.isEmpty()) {
                 matchedBranch = branches.get(0);
                 branchField.setText(matchedBranch.getName());
             } else {
-                branches = branchDAO.getByDistrict(district.getName());
-                if (!branches.isEmpty()) {
-                    matchedBranch = branches.get(0);
-                    branchField.setText(matchedBranch.getName());
-                } else {
-                    matchedBranch = null;
-                    branchField.setText("No branch found for this area");
-                }
+                matchedBranch = null;
+                branchField.setText("No branch found for " + district.getName());
             }
+        } else {
+            matchedBranch = null;
+            branchField.setText("");
         }
     }
     
